@@ -7,9 +7,6 @@ function polygonClick(e){
                     color: oldPoly.options.oldColor});
     }
     var polygon = e.target;
-    console.log(e);
-    console.log(polygon);
-    console.log("Klikk");
     polygon.setStyle({fillOpacity : 0,
                     opacity : 1,
                     color: "red"});
@@ -18,6 +15,10 @@ function polygonClick(e){
 
 function loadGrunnkretser(map){
     let requestURL = 'http://localhost:5000/grenser/grunnkrets';
+    console.log(location.hostname);
+    if(location.hostname == "oslomapsfrontend.azurewebsites.net") {
+        requestURL = 'https://oslomapsbackend.azurewebsites.net/grenser/grunnkrets';
+    }
     let request = new XMLHttpRequest();
     request.open('GET', requestURL);
     request.responseType = "json";
@@ -37,7 +38,9 @@ function loadGrunnkretser(map){
                 fillOpacity: 0.5,
                 oldColor: place["BydelFarge"]
             }).addTo(map);
-            polygon.bindPopup("<h1>" + place["GrunnkretsNavn"] + "</h1> <h2>" + place["BydelNavn"] + "</h2>")
+            polygon.bindPopup("<h1>" + place["GrunnkretsNavn"] + "</h1>" +
+                " <h2> Bydel: " + place["BydelNavn"] + "</h2>" +
+                " <h2> Innbyggere: " + place["InnbyggerTall"] + "</h2>");
             polygon.on("click", polygonClick);
         }
     }
