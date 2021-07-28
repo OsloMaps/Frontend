@@ -1,5 +1,23 @@
+var oldPoly = null;
+
+function polygonClick(e){
+    if(oldPoly != null){
+        oldPoly.setStyle({fillOpacity : 0.5,
+                    opacity : 0.5,
+                    color: oldPoly.options.oldColor});
+    }
+    var polygon = e.target;
+    console.log(e);
+    console.log(polygon);
+    console.log("Klikk");
+    polygon.setStyle({fillOpacity : 0,
+                    opacity : 1,
+                    color: "red"});
+    oldPoly = polygon;
+}
+
 function loadGrunnkretser(map){
-    let requestURL = 'https://oslomapsbackend.azurewebsites.net/grenser/grunnkrets';
+    let requestURL = 'http://localhost:5000/grenser/grunnkrets';
     let request = new XMLHttpRequest();
     request.open('GET', requestURL);
     request.responseType = "json";
@@ -13,11 +31,14 @@ function loadGrunnkretser(map){
                 coords.push([coord[0], coord[1]]);
             }
             var polygon = L.polygon(coords,{
+                fillColor: place["BydelFarge"],
                 color: place["BydelFarge"],
                 opacity: 0.5,
-                fillOpacity: 0.5
+                fillOpacity: 0.5,
+                oldColor: place["BydelFarge"]
             }).addTo(map);
             polygon.bindPopup("<h1>" + place["GrunnkretsNavn"] + "</h1> <h2>" + place["BydelNavn"] + "</h2>")
+            polygon.on("click", polygonClick);
         }
     }
 }
