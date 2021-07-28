@@ -12,9 +12,15 @@ function polygonClick(e){
                     opacity : 1,
                       color: "red"});
     oldPoly = polygon;
-    var indeks = polygon.options.dataIndeks;
-    console.log(indeks);
-    console.log(data["Grenser"][indeks]);
+  
+    var grunnKrets = data["Grenser"][polygon.options.dataIndeks];
+    var div = document.getElementById('info-box');
+    div.style.visibility= "visible";
+    div.innerHTML = "<h1>" + grunnKrets.GrunnkretsNavn +
+	"</h1><h2><br>Bydel: " + grunnKrets.BydelNavn +
+	"</h2><h3>Innbyggertall: " + grunnKrets.InnbyggerTall + "</h3>";
+    
+    
 }
 
 function loadGrunnkretser(map){
@@ -44,9 +50,6 @@ function loadGrunnkretser(map){
                 oldColor: place["BydelFarge"],
 		dataIndeks : i
             }).addTo(map);
-            polygon.bindPopup("<h1>" + place["GrunnkretsNavn"] + "</h1>" +
-                " <h2> Bydel: " + place["BydelNavn"] + "</h2>" +
-                " <h2> Innbyggere: " + place["InnbyggerTall"] + "</h2>");
 	    i++;
             polygon.on("click", polygonClick);
         }
