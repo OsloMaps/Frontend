@@ -1,4 +1,5 @@
 var oldPoly = null;
+var data;
 
 function polygonClick(e){
     if(oldPoly != null){
@@ -12,8 +13,11 @@ function polygonClick(e){
     console.log("Klikk");
     polygon.setStyle({fillOpacity : 0,
                     opacity : 1,
-                    color: "red"});
+                      color: "red"});
     oldPoly = polygon;
+    var indeks = polygon.options.dataIndeks;
+    console.log(indeks);
+    console.log(data["Grenser"][indeks]);
 }
 
 function loadGrunnkretser(map){
@@ -23,7 +27,8 @@ function loadGrunnkretser(map){
     request.responseType = "json";
     request.send();
     request.onload = function() {
-        const data = JSON.parse(request.response);
+        data = JSON.parse(request.response);
+	var i = 0;
         for (const place of data["Grenser"]){
             let coords = [];
             arr = place["Koordinater"];
@@ -35,8 +40,10 @@ function loadGrunnkretser(map){
                 color: place["BydelFarge"],
                 opacity: 0.5,
                 fillOpacity: 0.5,
-                oldColor: place["BydelFarge"]
+                oldColor: place["BydelFarge"],
+		dataIndeks : i
             }).addTo(map);
+	    i++;
             polygon.bindPopup("<h1>" + place["GrunnkretsNavn"] + "</h1> <h2>" + place["BydelNavn"] + "</h2>")
             polygon.on("click", polygonClick);
         }
