@@ -1,5 +1,5 @@
 function loadGrunnkretser(map){
-    let requestURL = 'http://localhost:5000/grenser/grunnkrets';
+    let requestURL = 'https://oslomapsbackend.azurewebsites.net/grenser/grunnkrets';
     let request = new XMLHttpRequest();
     request.open('GET', requestURL);
     request.responseType = "json";
