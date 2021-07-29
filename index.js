@@ -1,26 +1,84 @@
-var oldPoly = null;
+var polysSelected = [];
 var data;
 
+function closeInfoBox(){
+    var info_box = document.getElementById('info-box');
+    info_box.style.visibility= "hidden";
+}
+
+function arrayEqual(a1, a2){
+    if(a1.length!=a2.length){
+        return false;
+    }
+    for (var i = 0; i < a1.length; i++){
+        if(a1[i]!=a2[i]){
+            return false;
+        }
+    }
+    return true;
+}
+
 function polygonClick(e){
-    if(oldPoly != null){
-        oldPoly.setStyle({fillOpacity : 0.5,
-                    opacity : 0.5,
-                    color: oldPoly.options.oldColor});
+    console.log(e.originalEvent.ctrlKey);
+    if(!e.originalEvent.ctrlKey){
+        for(let oldPoly of polysSelected){
+            oldPoly.setStyle({fillOpacity : 0.5,
+                        opacity : 0.5,
+                        color: oldPoly.options.oldColor});
+    }
+    polysSelected = [];
     }
     var polygon = e.target;
     polygon.setStyle({fillOpacity : 0,
                     opacity : 1,
                       color: "red"});
-    oldPoly = polygon;
-  
-    var grunnKrets = data["Grenser"][polygon.options.dataIndeks];
-    var div = document.getElementById('info-box');
-    div.style.visibility= "visible";
-    div.innerHTML = "<h1>" + grunnKrets.GrunnkretsNavn +
-	"</h1><h2><br>Bydel: " + grunnKrets.BydelNavn +
-	"</h2><h3>Innbyggertall: " + grunnKrets.InnbyggerTall + "</h3>";
-    
-    
+    var info_box = document.getElementById('info-box');
+    var alreadyIn = false;
+    for(let x of polysSelected){
+        if(x==polygon){
+            alreadyIn = true;
+            break;
+        }
+    }
+    if(!alreadyIn){
+        polysSelected.push(polygon);
+    }
+    if(polysSelected.length == 1){
+        var grunnKrets = data["Grenser"][polygon.options.dataIndeks];
+        info_box.style.visibility= "visible";
+        var info_box_text = document.getElementById("info-box-text");
+        info_box_text.innerHTML = "<h1>" + grunnKrets.GrunnkretsNavn +
+	    "</h1><h2><br>Bydel: " + grunnKrets.BydelNavn +
+	    "</h2><h3>Innbyggertall: " + grunnKrets.InnbyggerTall + "</h3>";
+    }else{
+        var grunnKrets = data["Grenser"][polysSelected[0].options.dataIndeks];
+        var grunnkretser = [grunnKrets.GrunnkretsNavn];
+        var innbyggertall = grunnKrets.InnbyggerTall;
+        for(let poly of polysSelected.slice(1)){
+            grunnKrets = data["Grenser"][poly.options.dataIndeks];
+            grunnkretser.push(grunnKrets.GrunnkretsNavn);
+            innbyggertall+=grunnKrets.InnbyggerTall
+        }
+        grunnkretser.sort();
+        var grunnkretsTekst = "Grunnkretser: " + grunnkretser[0];
+        var prev = grunnkretser[0].split(" ");
+        for(let gk of grunnkretser.slice(1)){
+            console.log(prev.slice(0,-1));
+            console.log(gk.split(" ").slice(0,-1));
+            if(arrayEqual(prev.slice(0,-1),gk.split(" ").slice(0,-1))){
+                var split = gk.split(" ");
+                grunnkretsTekst += ", " + split[split.length-1];
+            }else{
+                grunnkretsTekst += ", " + gk;
+            }
+            prev = gk.split(" ");
+        }
+         var info_box = document.getElementById('info-box');
+        info_box.style.visibility= "visible";
+        var info_box_text = document.getElementById("info-box-text");
+        info_box_text.innerHTML = "<h3>" + grunnkretsTekst +
+	    "</h3><h3>Innbyggertall: " + innbyggertall + "</h3>";
+    }
 }
 
 function loadGrunnkretser(map){
@@ -51,6 +109,7 @@ function loadGrunnkretser(map){
 		dataIndeks : i
             }).addTo(map);
 	    i++;
+	        polygon.bindTooltip(place["GrunnkretsNavn"], {sticky: true});
             polygon.on("click", polygonClick);
         }
     }
@@ -61,7 +120,7 @@ function loadMap() {
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoib3JkYm9rYSIsImEiOiJja3JuYTczazgxaThpMzFsaXhuYWhuY3J6In0.Xm4vpvJ9lmIa_J1qZT2L3Q', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         maxZoom: 18,
-        id: 'mapbox/streets-v11',
+        id: 'mapbox/satellite-streets-v11',
         tileSize: 512,
         zoomOffset: -1,
         accessToken: 'pk.eyJ1Ijoib3JkYm9rYSIsImEiOiJja3JuYTczazgxaThpMzFsaXhuYWhuY3J6In0.Xm4vpvJ9lmIa_J1qZT2L3Q'
