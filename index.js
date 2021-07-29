@@ -209,8 +209,6 @@ function loadDrawing(map){
 
     map.on(L.Draw.Event.CREATED, function(e) {
         polygonDrawn(e);
-        var layer = e.layer;
-        editableLayers.addLayer(layer);
     });
 
 }
