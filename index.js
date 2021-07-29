@@ -1,10 +1,6 @@
 var polysSelected = [];
+var polygons = [];
 var data;
-
-function closeInfoBox(){
-    var info_box = document.getElementById('info-box');
-    info_box.style.visibility= "hidden";
-}
 
 function arrayEqual(a1, a2){
     if(a1.length!=a2.length){
@@ -18,8 +14,71 @@ function arrayEqual(a1, a2){
     return true;
 }
 
+
+function closeInfoBox(){
+    var info_box = document.getElementById('info-box');
+    info_box.style.visibility= "hidden";
+}
+
+function updateInfoBox(){
+    var info_box = document.getElementById('info-box');
+    var info_box_text = document.getElementById("info-box-text");
+    
+    if(polysSelected.length == 1){
+        var polygon = polysSelected[0];
+        var grunnKrets = data["Grenser"][polygon.options.dataIndeks];
+        info_box.style.visibility= "visible";
+        info_box_text.innerHTML = "<h1>" + grunnKrets.GrunnkretsNavn +
+	    "</h1><h2><br>Bydel: " + grunnKrets.BydelNavn +
+	    "</h2><h3>Innbyggertall: " + grunnKrets.InnbyggerTall + "</h3>";
+    }else if(polysSelected.length==0){
+        info_box.style.visibility= "hidden";
+    }else{
+        var grunnKrets = data["Grenser"][polysSelected[0].options.dataIndeks];
+        var grunnkretser = [grunnKrets.GrunnkretsNavn];
+        var innbyggertall = grunnKrets.InnbyggerTall;
+        for(let poly of polysSelected.slice(1)){
+            grunnKrets = data["Grenser"][poly.options.dataIndeks];
+            grunnkretser.push(grunnKrets.GrunnkretsNavn);
+            innbyggertall+=grunnKrets.InnbyggerTall
+        }
+        grunnkretser.sort();
+        var grunnkretsTekst = "Grunnkretser: " + grunnkretser[0];
+        var prev = grunnkretser[0].split(" ");
+        for(let gk of grunnkretser.slice(1)){
+            if(arrayEqual(prev.slice(0,-1),gk.split(" ").slice(0,-1))){
+                var split = gk.split(" ");
+                grunnkretsTekst += ", " + split[split.length-1];
+            }else{
+                grunnkretsTekst += ", " + gk;
+            }
+            prev = gk.split(" ");
+        }
+        info_box.style.visibility= "visible";
+        
+        info_box_text.innerHTML = "<h3>" + grunnkretsTekst +
+	    "</h3><h3>Innbyggertall: " + innbyggertall + "</h3>";
+    }
+}
+
+function highlightSelectedPolys(){
+    for(let polygon of polysSelected){
+	polygon.setStyle({fillOpacity : 0,
+			  opacity : 1,
+			  color: "red"});
+    }
+}
+
+function resetSelectedPolys(){
+    for(let selected of polysSelected){
+	 selected.setStyle({fillOpacity : 0.5,
+                            opacity : 0.5,
+                            color: selected.options.oldColor});
+    }
+    polysSelected = [];
+}
+
 function polygonClick(e){
-    console.log(e.originalEvent.ctrlKey);
     if(!e.originalEvent.ctrlKey){
         for(let oldPoly of polysSelected){
             oldPoly.setStyle({fillOpacity : 0.5,
@@ -43,58 +102,42 @@ function polygonClick(e){
                         color: polygon.options.oldColor});
         polysSelected.splice(index,1);
     }
-    if(polysSelected.length == 1){
-        var polygon = polysSelected[0];
-        var grunnKrets = data["Grenser"][polygon.options.dataIndeks];
-        info_box.style.visibility= "visible";
-        var info_box_text = document.getElementById("info-box-text");
-        info_box_text.innerHTML = "<h1>" + grunnKrets.GrunnkretsNavn +
-	    "</h1><h2><br>Bydel: " + grunnKrets.BydelNavn +
-	    "</h2><h3>Innbyggertall: " + grunnKrets.InnbyggerTall + "</h3>";
-    }else if(polysSelected.length==0){
-        info_box.style.visibility= "hidden";
-    }else{
-        var grunnKrets = data["Grenser"][polysSelected[0].options.dataIndeks];
-        var grunnkretser = [grunnKrets.GrunnkretsNavn];
-        var innbyggertall = grunnKrets.InnbyggerTall;
-        for(let poly of polysSelected.slice(1)){
-            grunnKrets = data["Grenser"][poly.options.dataIndeks];
-            grunnkretser.push(grunnKrets.GrunnkretsNavn);
-            innbyggertall+=grunnKrets.InnbyggerTall
-        }
-        grunnkretser.sort();
-        var grunnkretsTekst = "Grunnkretser: " + grunnkretser[0];
-        var prev = grunnkretser[0].split(" ");
-        for(let gk of grunnkretser.slice(1)){
-            console.log(prev.slice(0,-1));
-            console.log(gk.split(" ").slice(0,-1));
-            if(arrayEqual(prev.slice(0,-1),gk.split(" ").slice(0,-1))){
-                var split = gk.split(" ");
-                grunnkretsTekst += ", " + split[split.length-1];
-            }else{
-                grunnkretsTekst += ", " + gk;
-            }
-            prev = gk.split(" ");
-        }
-         var info_box = document.getElementById('info-box');
-        info_box.style.visibility= "visible";
-        var info_box_text = document.getElementById("info-box-text");
-        info_box_text.innerHTML = "<h3>" + grunnkretsTekst +
-	    "</h3><h3>Innbyggertall: " + innbyggertall + "</h3>";
+    updateInfoBox();
+}
+
+
+function isGrunnkretsInLayer(layer, grunnkrets){
+    var coords = grunnkrets["Koordinater"];
+    for(let coord of coords){
+	if(!layer.contains(L.latLng(coord[0], coord[1]))){
+	    return false;
+	}
+    }
+    return true;
+}
+
+function getGrunnkretserInDrawnLayer(layer){
+    resetSelectedPolys();
+    for(var i = 0; i < data["Grenser"].length; i++){
+	var grunnkrets = data["Grenser"][i];
+	if(isGrunnkretsInLayer(layer, grunnkrets)){
+	    polysSelected.push(polygons[i]);
+	}
     }
 }
 
 function polygonDrawn(e){
     var type = e.layerType, layer = e.layer;
-    console.log(layer);
     if (type === 'polygon') {
         console.log("Polygon created");
     }
+    getGrunnkretserInDrawnLayer(layer);
+    updateInfoBox();
+    highlightSelectedPolys();
 }
 
 function loadGrunnkretser(map){
     let requestURL = 'http://localhost:5000/grenser/grunnkrets';
-    console.log(location.hostname);
     if(location.hostname == "oslomapsfrontend.azurewebsites.net") {
         requestURL = 'https://oslomapsbackend.azurewebsites.net/grenser/grunnkrets';
     }
@@ -119,6 +162,7 @@ function loadGrunnkretser(map){
                 oldColor: place["BydelFarge"],
 		dataIndeks : i
             }).addTo(map);
+	    polygons.push(polygon);
 	    i++;
 	        polygon.bindTooltip(place["GrunnkretsNavn"], {sticky: true});
             polygon.on("click", polygonClick);
@@ -147,7 +191,8 @@ function loadDrawing(map){
         polyline: false,
         circle: false, // Turns off this drawing tool
         rectangle: false,
-        marker: false,
+          marker: false,
+	  circlemarker: false
         },
       edit: {
         featureGroup: editableLayers, //REQUIRED!!
