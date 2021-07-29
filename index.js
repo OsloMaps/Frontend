@@ -34,22 +34,25 @@ function polygonClick(e){
                       color: "red"});
     var info_box = document.getElementById('info-box');
     var alreadyIn = false;
-    for(let x of polysSelected){
-        if(x==polygon){
-            alreadyIn = true;
-            break;
-        }
-    }
-    if(!alreadyIn){
+    var index = polysSelected.indexOf(polygon);
+    if(index==-1){
         polysSelected.push(polygon);
+    }else{
+        polygon.setStyle({fillOpacity : 0.5,
+                        opacity : 0.5,
+                        color: polygon.options.oldColor});
+        polysSelected.splice(index,1);
     }
     if(polysSelected.length == 1){
+        var polygon = polysSelected[0];
         var grunnKrets = data["Grenser"][polygon.options.dataIndeks];
         info_box.style.visibility= "visible";
         var info_box_text = document.getElementById("info-box-text");
         info_box_text.innerHTML = "<h1>" + grunnKrets.GrunnkretsNavn +
 	    "</h1><h2><br>Bydel: " + grunnKrets.BydelNavn +
 	    "</h2><h3>Innbyggertall: " + grunnKrets.InnbyggerTall + "</h3>";
+    }else if(polysSelected.length==0){
+        info_box.style.visibility= "hidden";
     }else{
         var grunnKrets = data["Grenser"][polysSelected[0].options.dataIndeks];
         var grunnkretser = [grunnKrets.GrunnkretsNavn];
