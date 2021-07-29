@@ -84,6 +84,14 @@ function polygonClick(e){
     }
 }
 
+function polygonDrawn(e){
+    var type = e.layerType, layer = e.layer;
+    console.log(layer);
+    if (type === 'polygon') {
+        console.log("Polygon created");
+    }
+}
+
 function loadGrunnkretser(map){
     let requestURL = 'http://localhost:5000/grenser/grunnkrets';
     console.log(location.hostname);
@@ -118,6 +126,50 @@ function loadGrunnkretser(map){
     }
 }
 
+function loadDrawing(map){
+    var editableLayers = new L.FeatureGroup();
+    map.addLayer(editableLayers);
+
+    var drawPluginOptions = {
+      position: 'topleft',
+      draw: {
+        polygon: {
+          allowIntersection: false, // Restricts shapes to simple polygons
+          drawError: {
+            color: '#e1e100', // Color the shape will turn when intersects
+            message: '<strong>Nope!' // Message that will show when intersect
+          },
+          shapeOptions: {
+            color: '#97009c'
+          }
+        },
+        // disable toolbar item by setting it to false
+        polyline: false,
+        circle: false, // Turns off this drawing tool
+        rectangle: false,
+        marker: false,
+        },
+      edit: {
+        featureGroup: editableLayers, //REQUIRED!!
+        remove: false
+      }
+    };
+
+    var editableLayers = new L.FeatureGroup();
+    map.addLayer(editableLayers);
+
+    // Initialise the draw control and pass it the FeatureGroup of editable layers
+    var drawControl = new L.Control.Draw(drawPluginOptions);
+    map.addControl(drawControl);
+
+    map.on(L.Draw.Event.CREATED, function(e) {
+        polygonDrawn(e);
+        var layer = e.layer;
+        editableLayers.addLayer(layer);
+    });
+
+}
+
 function loadMap() {
     var mymap = L.map('map').setView([59.90, 10.75], 12);
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoib3JkYm9rYSIsImEiOiJja3JuYTczazgxaThpMzFsaXhuYWhuY3J6In0.Xm4vpvJ9lmIa_J1qZT2L3Q', {
@@ -129,5 +181,6 @@ function loadMap() {
         accessToken: 'pk.eyJ1Ijoib3JkYm9rYSIsImEiOiJja3JuYTczazgxaThpMzFsaXhuYWhuY3J6In0.Xm4vpvJ9lmIa_J1qZT2L3Q'
     }).addTo(mymap);
     loadGrunnkretser(mymap);
+    loadDrawing(mymap);
 }
 window.onload = loadMap;
