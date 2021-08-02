@@ -135,13 +135,29 @@ function polygonDrawn(e){
     highlightSelectedPolys();
 }
 
+function displaySearchResults(filteredGrunnkretser){
+  console.log(filteredGrunnkretser);
+  var newContent = "";
+  for(grunnkrets of filteredGrunnkretser){
+    newContent += "<a value=" + grunnkrets.GrunnkretsNavn +
+    ">" + grunnkrets.GrunnkretsNavn + "</a>";
+  }
+  document.getElementById("search-content").innerHTML = newContent;
+}
+
 function searchGrunnkretser(inputString){
-    const searchString = inputString.toLowerCase();
-    var grunnkretser = data["Grenser"];
-    const filteredGrunnkretser = grunnkretser.filter(grunnkrets =>{
-      return grunnkrets.GrunnkretsNavn.toLowerCase().includes(searchString);
-    });
-    console.log(filteredGrunnkretser);
+    if(inputString === ""){
+      document.getElementById("search-content").style.display = "none";
+    }
+    else{
+      document.getElementById("search-content").style.display = "";
+      const searchString = inputString.toLowerCase();
+      var grunnkretser = data["Grenser"];
+      const filteredGrunnkretser = grunnkretser.filter(grunnkrets =>{
+        return grunnkrets.GrunnkretsNavn.toLowerCase().includes(searchString);
+      });
+      displaySearchResults(filteredGrunnkretser);
+  }
 }
 
 function loadGrunnkretser(map){
