@@ -14,7 +14,6 @@ function arrayEqual(a1, a2){
     return true;
 }
 
-
 function closeInfoBox(){
     var info_box = document.getElementById('info-box');
     info_box.style.visibility= "hidden";
@@ -23,7 +22,7 @@ function closeInfoBox(){
 function updateInfoBox(){
     var info_box = document.getElementById('info-box');
     var info_box_text = document.getElementById("info-box-text");
-    
+
     if(polysSelected.length == 1){
         var polygon = polysSelected[0];
         var grunnKrets = data["Grenser"][polygon.options.dataIndeks];
@@ -55,7 +54,7 @@ function updateInfoBox(){
             prev = gk.split(" ");
         }
         info_box.style.visibility= "visible";
-        
+
         info_box_text.innerHTML = "<h3>" + grunnkretsTekst +
 	    "</h3><h3>Innbyggertall: " + innbyggertall + "</h3>";
     }
@@ -136,6 +135,15 @@ function polygonDrawn(e){
     highlightSelectedPolys();
 }
 
+function searchGrunnkretser(inputString){
+    const searchString = inputString.toLowerCase();
+    var grunnkretser = data["Grenser"];
+    const filteredGrunnkretser = grunnkretser.filter(grunnkrets =>{
+      return grunnkrets.GrunnkretsNavn.toLowerCase().includes(searchString);
+    });
+    console.log(filteredGrunnkretser);
+}
+
 function loadGrunnkretser(map){
     let requestURL = 'http://localhost:5000/grenser/grunnkrets';
     if(location.hostname == "oslomapsfrontend.azurewebsites.net") {
@@ -169,6 +177,8 @@ function loadGrunnkretser(map){
         }
     }
 }
+
+
 
 function loadDrawing(map){
     var editableLayers = new L.FeatureGroup();
