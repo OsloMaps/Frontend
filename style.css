@@ -41,6 +41,15 @@
            color:grey;
        }
 
+       #search-box {
+	   left: 0;
+	   height: 32px;
+	   width: 85%;
+	   border-radius: 3px;
+	   border: 1px solid #eaeaea;
+	   padding: 5px 10px;
+       }
+
        h1{
 	   text-align: center;
        }
