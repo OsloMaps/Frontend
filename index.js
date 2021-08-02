@@ -135,14 +135,28 @@ function polygonDrawn(e){
     highlightSelectedPolys();
 }
 
+function selectSearchResult(){
+  resetSelectedPolys();
+  polysSelected.push(polygons[this.getAttribute("data-indeks")]);
+  updateInfoBox();
+  highlightSelectedPolys();
+}
+
 function displaySearchResults(filteredGrunnkretser){
   var newContent = "";
   for(dataIndeks of filteredGrunnkretser){
     const grunnkrets = data["Grenser"][dataIndeks];
-    newContent += "<a value=" + dataIndeks +
-    ">" + grunnkrets.GrunnkretsNavn + "</a>";
+    newContent += "<div class='search-result' data-indeks='" + dataIndeks +
+    "'>" + grunnkrets.GrunnkretsNavn +"</div>";
   }
   document.getElementById("search-content").innerHTML = newContent;
+}
+
+function addEventToSearchResults(){
+  var searchResults = document.getElementsByClassName("search-result");
+  for(result of searchResults){
+    result.addEventListener('click', selectSearchResult);
+  }
 }
 
 function searchGrunnkretser(inputString){
@@ -161,6 +175,7 @@ function searchGrunnkretser(inputString){
         }
       }
       displaySearchResults(filteredGrunnkretser);
+      addEventToSearchResults();
   }
 }
 
