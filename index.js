@@ -136,10 +136,10 @@ function polygonDrawn(e){
 }
 
 function displaySearchResults(filteredGrunnkretser){
-  console.log(filteredGrunnkretser);
   var newContent = "";
-  for(grunnkrets of filteredGrunnkretser){
-    newContent += "<a value=" + grunnkrets.GrunnkretsNavn +
+  for(dataIndeks of filteredGrunnkretser){
+    const grunnkrets = data["Grenser"][dataIndeks];
+    newContent += "<a value=" + dataIndeks +
     ">" + grunnkrets.GrunnkretsNavn + "</a>";
   }
   document.getElementById("search-content").innerHTML = newContent;
@@ -153,9 +153,13 @@ function searchGrunnkretser(inputString){
       document.getElementById("search-content").style.display = "";
       const searchString = inputString.toLowerCase();
       var grunnkretser = data["Grenser"];
-      const filteredGrunnkretser = grunnkretser.filter(grunnkrets =>{
-        return grunnkrets.GrunnkretsNavn.toLowerCase().includes(searchString);
-      });
+      var filteredGrunnkretser = [];
+      for(dataIndeks in grunnkretser){
+        const grunnkrets = grunnkretser[dataIndeks];
+        if(grunnkrets.GrunnkretsNavn.toLowerCase().includes(searchString)){
+          filteredGrunnkretser.push(dataIndeks);
+        }
+      }
       displaySearchResults(filteredGrunnkretser);
   }
 }
