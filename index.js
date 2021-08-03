@@ -140,6 +140,7 @@ function selectSearchResult(){
   polysSelected.push(polygons[this.getAttribute("data-indeks")]);
   updateInfoBox();
   highlightSelectedPolys();
+  document.getElementById("search-content").style.display = "none";
 }
 
 function displaySearchResults(filteredGrunnkretser){
@@ -172,6 +173,7 @@ function searchGrunnkretser(inputString){
         const grunnkrets = grunnkretser[dataIndeks];
         if(grunnkrets.GrunnkretsNavn.toLowerCase().includes(searchString)){
           filteredGrunnkretser.push(dataIndeks);
+          if(filteredGrunnkretser.length >= 5) break;
         }
       }
       displaySearchResults(filteredGrunnkretser);
