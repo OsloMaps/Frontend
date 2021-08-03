@@ -1,92 +1,95 @@
 /* Always set the map height explicitly to define the size of the div
- * element that contains the map. */
-       #map {
-           height: 100%;
-       }
-       #app-container {
-	   height: 100%;
-       }
+* element that contains the map. */
+#map {
+  height: 100%;
+}
+#app-container {
+  height: 100%;
+}
 
-       #info-box{
-	   position: absolute;
-	   width: 300px;
-	   top: 0;
-	   right: 0;
-	   z-index: 1000;
-	   background: white;
-	   padding-right: 25px;
-	   padding-left: 25px;
-	   margin: 20px;
-	   box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-	   border-radius: 15px;
-       }
+#info-box{
+  position: absolute;
+  width: 300px;
+  top: 0;
+  right: 0;
+  z-index: 1000;
+  background: white;
+  padding-right: 25px;
+  padding-left: 25px;
+  margin: 20px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  border-radius: 15px;
+}
 
-       #info-box-text{
-           position: relative;
-       }
+#info-box-text{
+  position: relative;
+}
 
-       #info-box-close{
-           position: absolute;
-           top: 10px;
-           right: 10px;
-           border: none;
-           background: white;
-           cursor: pointer;
-           color: black;
-           font-size: 25px;
-           text-align: center;
-       }
+#info-box-close{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: white;
+  cursor: pointer;
+  color: black;
+  font-size: 25px;
+  text-align: center;
+}
 
-       #info-box-close:hover{
-           color:grey;
-       }
+#info-box-close:hover{
+  color:grey;
+}
 
-       #search-container {
-         z-index: 1000;
-         position: absolute;
-         top: 0;
-         left: 50px;
-	        height: 32px;
-	         width: 75%;
-           margin-top: 5px;
-	          border-radius: 15px;
-          background: white;
-       }
+#search-container {
+  z-index: 1000;
+  position: absolute;
+  top: 0;
+  left: 50px;
+  height: 32px;
+  width: 75%;
+  margin-top: 5px;
+  border-radius: 15px;
+  background: white;
+}
 
-       #search-box {
-         margin-top: 5px;
-         margin-bottom: 5px;
-         margin-left: 5px;
-         width:95%;
-         border-radius: 5px;
-       }
+#search-box {
+  position: absolute;
+  bottom: 3px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  width:100%;
+  border: none;
+  outline: none;
+}
 
-       .search-content {
-         width: 100%
-         position: absolute;
-         background-color: #f6f6f6;
-         border: 1px solid #ddd;
-         border-radius: 5px;
-         z-index: 1100;
-       }
+.search-content {
+  width: 100%
+  position: absolute;
+  margin-top: 25px;
+  background-color: #f6f6f6;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  z-index: 1100;
+}
 
-       .search-content div {
-         color: black;
-         padding: 12px 16px;
-         text-decoration: none;
-         display: block;
-       }
+.search-content div {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
 
-       .search-content div:hover{background-color: #f1f1f1;}
+.search-content div:hover{background-color: #f1f1f1;}
 
-       h1{
-	   text-align: center;
-       }
+h1{
+  text-align: center;
+}
 
-      /* Optional: Makes the sample page fill the window. */
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
+/* Optional: Makes the sample page fill the window. */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
