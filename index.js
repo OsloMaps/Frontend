@@ -165,7 +165,6 @@ function searchGrunnkretser(inputString){
       document.getElementById("search-content").style.display = "none";
     }
     else{
-      document.getElementById("search-content").style.display = "";
       const searchString = inputString.toLowerCase();
       var grunnkretser = data["Grenser"];
       var filteredGrunnkretser = [];
@@ -175,9 +174,15 @@ function searchGrunnkretser(inputString){
           filteredGrunnkretser.push(dataIndeks);
           if(filteredGrunnkretser.length >= 5) break;
         }
+        if(filteredGrunnkretser.length > 0){
+          document.getElementById("search-content").style.display = "";
+          displaySearchResults(filteredGrunnkretser);
+          addEventToSearchResults();
+        }
+        else{
+          document.getElementById("search-content").style.display = "none";
+        }
       }
-      displaySearchResults(filteredGrunnkretser);
-      addEventToSearchResults();
   }
 }
 
