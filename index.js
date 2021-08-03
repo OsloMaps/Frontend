@@ -168,9 +168,10 @@ function searchGrunnkretser(inputString){
       const searchString = inputString.toLowerCase();
       var grunnkretser = data["Grenser"];
       var filteredGrunnkretser = [];
+      //Check if in start of word
       for(dataIndeks in grunnkretser){
         const grunnkrets = grunnkretser[dataIndeks];
-        if(grunnkrets.GrunnkretsNavn.toLowerCase().includes(searchString)){
+        if(grunnkrets.GrunnkretsNavn.toLowerCase().startsWith(searchString)){
           filteredGrunnkretser.push(dataIndeks);
           if(filteredGrunnkretser.length >= 5) break;
         }
@@ -182,6 +183,23 @@ function searchGrunnkretser(inputString){
         else{
           document.getElementById("search-content").style.display = "none";
         }
+      }
+      //Check if in other place than start of word
+      if(filteredGrunnkretser.length < 5) {
+          for (dataIndeks in grunnkretser) {
+              const grunnkrets = grunnkretser[dataIndeks];
+              if (grunnkrets.GrunnkretsNavn.toLowerCase().includes(searchString) && !filteredGrunnkretser.includes(dataIndeks)) {
+                  filteredGrunnkretser.push(dataIndeks);
+                  if (filteredGrunnkretser.length >= 5) break;
+              }
+              if (filteredGrunnkretser.length > 0) {
+                  document.getElementById("search-content").style.display = "";
+                  displaySearchResults(filteredGrunnkretser);
+                  addEventToSearchResults();
+              } else {
+                  document.getElementById("search-content").style.display = "none";
+              }
+          }
       }
   }
 }
