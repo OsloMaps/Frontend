@@ -14,7 +14,6 @@ function arrayEqual(a1, a2){
     return true;
 }
 
-
 function closeInfoBox(){
     var info_box = document.getElementById('info-box');
     info_box.style.visibility= "hidden";
@@ -23,7 +22,7 @@ function closeInfoBox(){
 function updateInfoBox(){
     var info_box = document.getElementById('info-box');
     var info_box_text = document.getElementById("info-box-text");
-    
+
     if(polysSelected.length == 1){
         var polygon = polysSelected[0];
         var grunnKrets = data["Grenser"][polygon.options.dataIndeks];
@@ -55,7 +54,7 @@ function updateInfoBox(){
             prev = gk.split(" ");
         }
         info_box.style.visibility= "visible";
-        
+
         info_box_text.innerHTML = "<h3>" + grunnkretsTekst +
 	    "</h3><h3>Innbyggertall: " + innbyggertall + "</h3>";
     }
@@ -136,6 +135,75 @@ function polygonDrawn(e){
     highlightSelectedPolys();
 }
 
+function selectSearchResult(){
+  resetSelectedPolys();
+  polysSelected.push(polygons[this.getAttribute("data-indeks")]);
+  updateInfoBox();
+  highlightSelectedPolys();
+  document.getElementById("search-content").style.display = "none";
+}
+
+function displaySearchResults(filteredGrunnkretser){
+  var newContent = "";
+  for(dataIndeks of filteredGrunnkretser){
+    const grunnkrets = data["Grenser"][dataIndeks];
+    newContent += "<div class='search-result' data-indeks='" + dataIndeks +
+    "'>" + grunnkrets.GrunnkretsNavn +"</div>";
+  }
+  document.getElementById("search-content").innerHTML = newContent;
+}
+
+function addEventToSearchResults(){
+  var searchResults = document.getElementsByClassName("search-result");
+  for(result of searchResults){
+    result.addEventListener('click', selectSearchResult);
+  }
+}
+
+function searchGrunnkretser(inputString){
+    if(inputString === ""){
+      document.getElementById("search-content").style.display = "none";
+    }
+    else{
+      const searchString = inputString.toLowerCase();
+      var grunnkretser = data["Grenser"];
+      var filteredGrunnkretser = [];
+      //Check if in start of word
+      for(dataIndeks in grunnkretser){
+        const grunnkrets = grunnkretser[dataIndeks];
+        if(grunnkrets.GrunnkretsNavn.toLowerCase().startsWith(searchString)){
+          filteredGrunnkretser.push(dataIndeks);
+          if(filteredGrunnkretser.length >= 5) break;
+        }
+        if(filteredGrunnkretser.length > 0){
+          document.getElementById("search-content").style.display = "";
+          displaySearchResults(filteredGrunnkretser);
+          addEventToSearchResults();
+        }
+        else{
+          document.getElementById("search-content").style.display = "none";
+        }
+      }
+      //Check if in other place than start of word
+      if(filteredGrunnkretser.length < 5) {
+          for (dataIndeks in grunnkretser) {
+              const grunnkrets = grunnkretser[dataIndeks];
+              if (grunnkrets.GrunnkretsNavn.toLowerCase().includes(searchString) && !filteredGrunnkretser.includes(dataIndeks)) {
+                  filteredGrunnkretser.push(dataIndeks);
+                  if (filteredGrunnkretser.length >= 5) break;
+              }
+              if (filteredGrunnkretser.length > 0) {
+                  document.getElementById("search-content").style.display = "";
+                  displaySearchResults(filteredGrunnkretser);
+                  addEventToSearchResults();
+              } else {
+                  document.getElementById("search-content").style.display = "none";
+              }
+          }
+      }
+  }
+}
+
 function loadGrunnkretser(map){
     let requestURL = 'http://localhost:5000/grenser/grunnkrets';
     if(location.hostname == "oslomapsfrontend.azurewebsites.net") {
@@ -169,6 +237,8 @@ function loadGrunnkretser(map){
         }
     }
 }
+
+
 
 function loadDrawing(map){
     var editableLayers = new L.FeatureGroup();
